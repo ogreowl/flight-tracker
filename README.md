@@ -17,7 +17,5 @@ SDKs: Next.js, React, Node.js, Tailwind CSS, Axios, Typescript
 
 APIs: OpenWeatherMap API, OpenAI gpt-4o
 
-Built with Cursor
-
-Deployed with Vercel
+Built with Cursor, Deployed with Vercel
 
