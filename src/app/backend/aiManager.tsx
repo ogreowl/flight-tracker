@@ -1,7 +1,12 @@
 import { flightOperations } from '../data';
 import { getAircraftWarnings } from './collectWarnings';
 
-export async function askAI(message: string, chatHistory: any[] = [], onDataChanged?: () => void) {
+interface ChatMessage {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+}
+
+export async function askAI(message: string, chatHistory: ChatMessage[] = [], onDataChanged?: () => void) {
   try {
     const response = await fetch('/api', {
       method: 'POST',
@@ -48,7 +53,12 @@ export async function askAI(message: string, chatHistory: any[] = [], onDataChan
 
         case 'edit_flight':
           console.log('Edit Flight - Raw args:', parsedArgs);
-          const updates: any = {};
+          const updates: Partial<{
+            departureTime: Date;
+            departureAirport: string;
+            arrivalAirport: string;
+            aircraftId: string;
+          }> = {};
           if (parsedArgs.departureTime) {
             updates.departureTime = new Date(parsedArgs.departureTime);
           }

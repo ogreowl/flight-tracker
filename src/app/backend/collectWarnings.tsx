@@ -13,15 +13,6 @@ export interface SameAirportWarning {
   message: string;
 }
 
-// Helper to check if two flights overlap in time
-function flightsOverlap(f1: Flight, f2: Flight): boolean {
-  const start1 = new Date(f1.departureTime).getTime();
-  const end1 = new Date(f1.arrivalTime).getTime();
-  const start2 = new Date(f2.departureTime).getTime();
-  const end2 = new Date(f2.arrivalTime).getTime();
-  return start1 < end2 && start2 < end1;
-}
-
 export function getAircraftWarnings(): (AircraftWarning | SameAirportWarning)[] {
   const flights = flightOperations.getFlights();
   const warnings: (AircraftWarning | SameAirportWarning)[] = [];

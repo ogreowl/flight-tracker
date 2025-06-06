@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { flightOperations } from '../data';
-import { getAircraftWarnings } from '../backend/collectWarnings';
 import { airports } from '../data';
 import https from 'https';
 
@@ -24,7 +23,18 @@ function codeToCity(codeOrCity: string): string {
   return found ? found.city : codeOrCity;
 }
 
-function findClosestForecast(list: any[], targetDate: Date) {
+interface WeatherForecast {
+  dt: number;
+  main: {
+    temp: number;
+  };
+  weather: Array<{
+    description: string;
+    icon: string;
+  }>;
+}
+
+function findClosestForecast(list: WeatherForecast[], targetDate: Date) {
   let minDiff = Infinity;
   let closest = null;
   for (const entry of list) {
@@ -38,7 +48,19 @@ function findClosestForecast(list: any[], targetDate: Date) {
   return closest;
 }
 
-function makeWeatherRequest(url: string): Promise<any> {
+interface WeatherResponse {
+  list?: WeatherForecast[];
+  name: string;
+  main: {
+    temp: number;
+  };
+  weather: Array<{
+    description: string;
+    icon: string;
+  }>;
+}
+
+function makeWeatherRequest(url: string): Promise<WeatherResponse> {
   return new Promise((resolve, reject) => {
     https.get(url, (res) => {
       let data = '';
@@ -74,7 +96,7 @@ async function getWeatherForCity(cityOrCode: string, date?: Date) {
       const closest = findClosestForecast(data.list, date);
       if (!closest) return null;
       return {
-        city: data.city.name,
+        city: data.name,
         temperature: closest.main.temp,
         description: closest.weather[0].description,
         icon: closest.weather[0].icon,

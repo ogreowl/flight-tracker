@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { flightOperations, airports, getFlightTime } from '../data';
+import { flightOperations, airports } from '../data';
 
 interface AddFlightProps {
   onClose: () => void;
