@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { askAI } from '../backend/aiManager';
+import { flightOperations } from '../data';
 
 interface ChatMessage {
   sender: 'user' | 'ai';
@@ -20,6 +21,22 @@ export default function ChatInterface({ onDataChanged }: ChatInterfaceProps) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Refresh AI context when flights change
+  useEffect(() => {
+    if (messages.length > 0) {
+      // Add a system message to update the AI's context
+      const flights = flightOperations.getFlights();
+      const flightSummary = flights.length === 0
+        ? 'There are currently no scheduled flights.'
+        : flights.map(f => `Flight ${f.id}: ${f.departureAirport} to ${f.arrivalAirport}, Aircraft ${f.aircraftId}, Departs ${new Date(f.departureTime).toLocaleString()}, Arrives ${new Date(f.arrivalTime).toLocaleString()}`).join('\n');
+      
+      setMessages(prev => [...prev, {
+        sender: 'ai',
+        text: `I've updated my knowledge of the flight schedule.`
+      }]);
+    }
+  }, [onDataChanged]);
 
   // For OpenAI, keep a parallel array of {role, content} for context
   const getOpenAIMessages = (): OpenAIMessage[] =>

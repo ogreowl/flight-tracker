@@ -95,40 +95,40 @@ const initialFlights: Flight[] = [
     departureAirport: 'JFK',
     arrivalAirport: 'LAX',
     aircraftId: 'A1',
-    departureTime: new Date('2024-06-13T10:00:00'),
-    arrivalTime: new Date('2024-06-13T16:00:00')
+    departureTime: new Date('2025-06-13T10:00:00'),
+    arrivalTime: new Date('2025-06-13T16:00:00')
   },
   {
     id: 'F2',
     departureAirport: 'LAX',
     arrivalAirport: 'SFO',
     aircraftId: 'A2',
-    departureTime: new Date('2024-06-13T14:00:00'),
-    arrivalTime: new Date('2024-06-13T15:00:00')
+    departureTime: new Date('2025-06-13T14:00:00'),
+    arrivalTime: new Date('2025-06-13T15:00:00')
   },
   {
     id: 'F3',
     departureAirport: 'ORD',
     arrivalAirport: 'DFW',
     aircraftId: 'A3',
-    departureTime: new Date('2024-06-13T12:00:00'),
-    arrivalTime: new Date('2024-06-13T14:00:00')
+    departureTime: new Date('2025-06-13T12:00:00'),
+    arrivalTime: new Date('2025-06-13T14:00:00')
   },
   {
     id: 'F4',
     departureAirport: 'DFW',
     arrivalAirport: 'JFK',
     aircraftId: 'A1',
-    departureTime: new Date('2024-06-13T16:00:00'),
-    arrivalTime: new Date('2024-06-13T20:00:00')
+    departureTime: new Date('2025-06-13T16:00:00'),
+    arrivalTime: new Date('2025-06-13T20:00:00')
   },
   {
     id: 'F5',
     departureAirport: 'SFO',
     arrivalAirport: 'ORD',
     aircraftId: 'A2',
-    departureTime: new Date('2024-06-13T18:00:00'),
-    arrivalTime: new Date('2024-06-13T22:00:00')
+    departureTime: new Date('2025-06-13T18:00:00'),
+    arrivalTime: new Date('2025-06-13T22:00:00')
   }
 ];
 
