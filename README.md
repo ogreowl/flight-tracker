@@ -1,4 +1,4 @@
-## AI Flight Scheduler, by Bobby Becker
+## LLM-Native Flight Scheduler Prototype
 
 Link: https://flight-tracker-ft2c83v8m-bobbybeckers-projects.vercel.app/
 
