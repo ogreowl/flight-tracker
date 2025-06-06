@@ -33,7 +33,7 @@ export default function ChatInterface({ onDataChanged }: ChatInterfaceProps) {
       
       setMessages(prev => [...prev, {
         sender: 'ai',
-        text: `I've updated my knowledge of the flight schedule.`
+        text: `Updated flight schedule: ${flightSummary}`
       }]);
     }
   }, [onDataChanged]);
