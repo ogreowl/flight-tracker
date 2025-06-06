@@ -1,6 +1,7 @@
 ## AI Flight Scheduler, by Bobby Becker
 
 Link: https://flight-tracker-ft2c83v8m-bobbybeckers-projects.vercel.app/
+
 GitHub: https://github.com/ogreowl/flight-tracker
 
 ## Prompt:
