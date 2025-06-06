@@ -6,6 +6,11 @@ interface ChatMessage {
   text: string;
 }
 
+interface OpenAIMessage {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+}
+
 interface ChatInterfaceProps {
   onDataChanged?: () => void; // Call this when data (like flights) changes
 }
@@ -17,7 +22,7 @@ export default function ChatInterface({ onDataChanged }: ChatInterfaceProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // For OpenAI, keep a parallel array of {role, content} for context
-  const getOpenAIMessages = () =>
+  const getOpenAIMessages = (): OpenAIMessage[] =>
     messages.map((msg) => ({
       role: msg.sender === 'user' ? 'user' : 'assistant',
       content: msg.text,
