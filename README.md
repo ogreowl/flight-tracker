@@ -14,7 +14,10 @@ This is meant to demonstrate the core implementation of what has become a new pa
 
 ## Tools & Frameworks:
 SDKs: Next.js, React, Node.js, Tailwind CSS, Axios, Typescript
+
 APIs: OpenWeatherMap API, OpenAI gpt-4o
+
 Built with Cursor
+
 Deployed with Vercel
 
