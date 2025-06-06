@@ -133,8 +133,8 @@ const initialFlights: Flight[] = [
 ];
 
 // State Management
-let flights: Flight[] = [...initialFlights];
-let aircraft = [...initialAircraft];
+const flights: Flight[] = [...initialFlights];
+const aircraft = [...initialAircraft];
 let nextFlightId = initialFlights.length + 1;  // Start after the initial flights
 
 // CRUD Operations

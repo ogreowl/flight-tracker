@@ -26,7 +26,12 @@ export default function EditFlight({ flight, onClose, onFlightUpdated }: EditFli
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const updates: any = {};
+    const updates: Partial<{
+      departureAirport: string;
+      arrivalAirport: string;
+      aircraftId: string;
+      departureTime: Date;
+    }> = {};
     if (formData.departureAirport) updates.departureAirport = formData.departureAirport;
     if (formData.arrivalAirport) updates.arrivalAirport = formData.arrivalAirport;
     if (formData.aircraftId) updates.aircraftId = formData.aircraftId;

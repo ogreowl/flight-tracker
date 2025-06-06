@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getAircraftWarnings, type AircraftWarning, type SameAirportWarning } from '../backend/collectWarnings';
+import { type AircraftWarning, type SameAirportWarning } from '../backend/collectWarnings';
 
 interface ShowWarningsProps {
   warnings: (AircraftWarning | SameAirportWarning)[];

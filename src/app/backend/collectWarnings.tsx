@@ -1,5 +1,4 @@
 import { flightOperations } from '../data';
-import type { Flight } from '../data';
 
 export interface AircraftWarning {
   aircraftId: string;
