@@ -137,6 +137,10 @@ const flights: Flight[] = [...initialFlights];
 const aircraft = [...initialAircraft];
 let nextFlightId = initialFlights.length + 1;  // Start after the initial flights
 
+// Callback system for change notifications
+type ChangeCallback = (message: string) => void;
+let changeCallbacks: ChangeCallback[] = [];
+
 // CRUD Operations
 export const flightOperations = {
   // Create
@@ -153,6 +157,11 @@ export const flightOperations = {
       arrivalTime
     };
     flights.push(newFlight);
+    
+    // Notify of the change
+    const message = `A new flight has been added: ${newFlight.id} from ${newFlight.departureAirport} to ${newFlight.arrivalAirport}, departing at ${new Date(newFlight.departureTime).toLocaleString()}.`;
+    changeCallbacks.forEach(cb => cb(message));
+    
     return newFlight;
   },
 
@@ -178,6 +187,16 @@ export const flightOperations = {
       }
       
       flights[index] = updatedFlight;
+
+      // Notify of the change
+      const changes = [];
+      if (updates.departureAirport) changes.push(`departure airport to ${updates.departureAirport}`);
+      if (updates.arrivalAirport) changes.push(`arrival airport to ${updates.arrivalAirport}`);
+      if (updates.aircraftId) changes.push(`aircraft to ${updates.aircraftId}`);
+      if (updates.departureTime) changes.push(`departure time to ${updates.departureTime.toLocaleString()}`);
+      const message = `Flight ${id} has been updated: ${changes.join(', ')}.`;
+      changeCallbacks.forEach(cb => cb(message));
+
       return flights[index];
     }
     return null;
@@ -188,6 +207,11 @@ export const flightOperations = {
     const index = flights.findIndex(f => f.id === id);
     if (index !== -1) {
       flights.splice(index, 1);
+      
+      // Notify of the change
+      const message = `Flight ${id} has been deleted from the schedule.`;
+      changeCallbacks.forEach(cb => cb(message));
+      
       return true;
     }
     return false;
@@ -200,4 +224,12 @@ export const flightOperations = {
       aircraft.currentLocation = location;
     }
   },
+
+  // Register for change notifications
+  onFlightChange: (callback: ChangeCallback) => {
+    changeCallbacks.push(callback);
+    return () => {
+      changeCallbacks = changeCallbacks.filter(cb => cb !== callback);
+    };
+  }
 }; 

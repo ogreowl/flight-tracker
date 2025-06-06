@@ -3,7 +3,7 @@ import { askAI } from '../backend/aiManager';
 import { flightOperations } from '../data';
 
 interface ChatMessage {
-  sender: 'user' | 'ai';
+  sender: 'user' | 'ai' | 'system';
   text: string;
 }
 
@@ -22,26 +22,18 @@ export default function ChatInterface({ onDataChanged }: ChatInterfaceProps) {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Refresh AI context when flights change
+  // Listen for flight changes
   useEffect(() => {
-    if (messages.length > 0) {
-      // Add a system message to update the AI's context
-      const flights = flightOperations.getFlights();
-      const flightSummary = flights.length === 0
-        ? 'There are currently no scheduled flights.'
-        : flights.map(f => `Flight ${f.id}: ${f.departureAirport} to ${f.arrivalAirport}, Aircraft ${f.aircraftId}, Departs ${new Date(f.departureTime).toLocaleString()}, Arrives ${new Date(f.arrivalTime).toLocaleString()}`).join('\n');
-      
-      setMessages(prev => [...prev, {
-        sender: 'ai',
-        text: `Updated flight schedule: ${flightSummary}`
-      }]);
-    }
-  }, [onDataChanged]);
+    const unsubscribe = flightOperations.onFlightChange((message: string) => {
+      setMessages(prev => [...prev, { sender: 'system', text: message }]);
+    });
+    return unsubscribe;
+  }, []);
 
   // For OpenAI, keep a parallel array of {role, content} for context
   const getOpenAIMessages = (): OpenAIMessage[] =>
     messages.map((msg) => ({
-      role: msg.sender === 'user' ? 'user' : 'assistant',
+      role: msg.sender === 'user' ? 'user' : msg.sender === 'system' ? 'system' : 'assistant',
       content: msg.text,
     }));
 
@@ -74,12 +66,14 @@ export default function ChatInterface({ onDataChanged }: ChatInterfaceProps) {
         {messages.map((msg, idx) => (
           <div
             key={idx}
-            className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} transition-all duration-200`}
+            className={`flex ${msg.sender === 'user' ? 'justify-end' : msg.sender === 'system' ? 'justify-center' : 'justify-start'} transition-all duration-200`}
           >
             <span
               className={
                 msg.sender === 'user'
                   ? 'inline-block bg-blue-600 text-white px-4 py-2 rounded-2xl mb-1 max-w-xs text-base shadow-md'
+                  : msg.sender === 'system'
+                  ? 'inline-block bg-gray-500 text-white px-4 py-2 rounded-2xl mb-1 max-w-xs text-base shadow-md'
                   : 'inline-block bg-gray-100 text-gray-900 px-4 py-2 rounded-2xl mb-1 max-w-xs text-base shadow'
               }
               style={{ wordBreak: 'break-word', lineHeight: '1.5' }}

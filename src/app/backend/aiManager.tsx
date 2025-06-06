@@ -33,13 +33,20 @@ export async function askAI(message: string, chatHistory: ChatMessage[] = [], on
       const parsedArgs = JSON.parse(args);
       console.log('Parsed arguments:', parsedArgs);
 
+      let systemMessage = '';
+      let result = '';
+
       switch (name) {
         case 'delete_flight':
           const deleted = flightOperations.deleteFlight(parsedArgs.flightId);
+          if (deleted) {
+            systemMessage = `Flight ${parsedArgs.flightId} has been deleted from the schedule.`;
+            result = `Flight ${parsedArgs.flightId} has been successfully deleted from the schedule.`;
+          } else {
+            result = `Could not find flight with ID ${parsedArgs.flightId}.`;
+          }
           onDataChanged?.();
-          return deleted 
-            ? `Flight ${parsedArgs.flightId} has been successfully deleted from the schedule.`
-            : `Could not find flight with ID ${parsedArgs.flightId}.`;
+          break;
 
         case 'add_flight':
           const newFlight = flightOperations.addFlight({
@@ -48,8 +55,10 @@ export async function askAI(message: string, chatHistory: ChatMessage[] = [], on
             aircraftId: parsedArgs.aircraftId,
             departureTime: new Date(parsedArgs.departureTime)
           });
+          systemMessage = `A new flight has been added: ${newFlight.id} from ${newFlight.departureAirport} to ${newFlight.arrivalAirport}, departing at ${new Date(newFlight.departureTime).toLocaleString()}.`;
+          result = `Flight added: ${newFlight.departureAirport} to ${newFlight.arrivalAirport} with aircraft ${newFlight.aircraftId} departing at ${new Date(newFlight.departureTime).toLocaleString()}`;
           onDataChanged?.();
-          return `Flight added: ${newFlight.departureAirport} to ${newFlight.arrivalAirport} with aircraft ${newFlight.aircraftId} departing at ${new Date(newFlight.departureTime).toLocaleString()}`;
+          break;
 
         case 'edit_flight':
           console.log('Edit Flight - Raw args:', parsedArgs);
@@ -75,22 +84,33 @@ export async function askAI(message: string, chatHistory: ChatMessage[] = [], on
           console.log('Edit Flight - Updates:', updates);
           const updated = flightOperations.updateFlight(parsedArgs.flightId, updates);
           console.log('Edit Flight - Updated flight:', updated);
+          if (updated) {
+            const changes = [];
+            if (updates.departureAirport) changes.push(`departure airport to ${updates.departureAirport}`);
+            if (updates.arrivalAirport) changes.push(`arrival airport to ${updates.arrivalAirport}`);
+            if (updates.aircraftId) changes.push(`aircraft to ${updates.aircraftId}`);
+            if (updates.departureTime) changes.push(`departure time to ${updates.departureTime.toLocaleString()}`);
+            systemMessage = `Flight ${parsedArgs.flightId} has been updated: ${changes.join(', ')}.`;
+            result = `Flight ${parsedArgs.flightId} has been updated.`;
+          } else {
+            result = `Could not find flight with ID ${parsedArgs.flightId}.`;
+          }
           onDataChanged?.();
-          return updated 
-            ? `Flight ${parsedArgs.flightId} has been updated.`
-            : `Could not find flight with ID ${parsedArgs.flightId}.`;
+          break;
 
         case 'check_warnings':
           const warnings = getAircraftWarnings();
-          return warnings.length === 0
+          result = warnings.length === 0
             ? 'There are no double-booked aircraft or flight conflicts.'
             : 'Here are the current warnings about double-booked aircraft:\n' +
               warnings.map(w => w.message).join('\n');
+          break;
 
         case 'check_weather':
           const flight = flightOperations.getFlight(parsedArgs.flightId);
           if (!flight) {
-            return `Could not find flight with ID ${parsedArgs.flightId}.`;
+            result = `Could not find flight with ID ${parsedArgs.flightId}.`;
+            break;
           }
           
           // Make a weather request for the departure city
@@ -107,15 +127,24 @@ export async function askAI(message: string, chatHistory: ChatMessage[] = [], on
           });
 
           if (!weatherResponse.ok) {
-            return `Could not fetch weather for flight ${parsedArgs.flightId}.`;
+            result = `Could not fetch weather for flight ${parsedArgs.flightId}.`;
+            break;
           }
 
           const weather = await weatherResponse.json();
-          return `Weather for Flight ${parsedArgs.flightId} (${flight.departureAirport}):\nTemperature: ${Math.round(weather.temperature)}°C\nConditions: ${weather.description}`;
+          result = `Weather for Flight ${parsedArgs.flightId} (${flight.departureAirport}):\nTemperature: ${Math.round(weather.temperature)}°C\nConditions: ${weather.description}`;
+          break;
 
         default:
-          return 'Unknown function call received.';
+          result = 'Unknown function call received.';
       }
+
+      // If we have a system message, add it to the chat history
+      if (systemMessage) {
+        chatHistory.push({ role: 'system', content: systemMessage });
+      }
+
+      return result;
     }
 
     return data.content;
